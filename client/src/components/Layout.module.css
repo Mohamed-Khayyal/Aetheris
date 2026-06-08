@@ -1,0 +1,67 @@
+.wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+.main { flex: 1; padding-top: 64px; }
+
+.footer {
+  margin-top: 60px;
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+  background: var(--bg2);
+}
+.footerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .footerContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+  }
+  .footerLeft {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.footerBrand {
+  font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.footerText { font-size: 0.8rem; color: var(--text3); font-style: italic; }
+
+.footerRight {
+  display: flex;
+  align-items: center;
+}
+
+.discordLink {
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.discordIcon {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.discordLink:hover {
+  color: #5865F2; /* Discord brand color */
+  filter: drop-shadow(0 0 8px rgba(88, 101, 242, 0.6));
+  transform: translateY(-2px);
+}

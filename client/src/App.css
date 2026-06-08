@@ -1,0 +1,2 @@
+/* App-level resets — no component-specific styles here */
+#root { display: flex; flex-direction: column; min-height: 100vh; }

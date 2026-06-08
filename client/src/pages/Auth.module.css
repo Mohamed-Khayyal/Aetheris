@@ -1,0 +1,110 @@
+/* Shared Auth Page Styles (Register & Login) */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.overlay {
+  position: absolute; inset: 0;
+  background: rgba(11, 9, 9, 0.72);
+}
+
+.card {
+  position: relative; z-index: 1;
+  background: rgba(26, 22, 22, 0.88);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  width: 100%; max-width: 420px;
+  box-shadow: var(--shadow), 0 0 60px rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  animation: cardIn 0.4s ease;
+}
+
+@keyframes cardIn {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem; font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+.form { display: flex; flex-direction: column; gap: 14px; }
+
+.inputWrap { position: relative; }
+
+.input {
+  width: 100%;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+}
+.input::placeholder { color: var(--text3); }
+.input:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(196,30,30,0.15);
+  background: rgba(0,0,0,0.6);
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.82rem;
+  text-align: center;
+  padding: 8px;
+  background: rgba(196,30,30,0.1);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(196,30,30,0.2);
+}
+
+.submitBtn {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--red-dark), var(--red));
+  border: none; border-radius: var(--radius-sm);
+  color: #fff; font-size: 0.95rem; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px var(--red-glow);
+}
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px var(--red-glow);
+  background: linear-gradient(135deg, var(--red), var(--red2));
+}
+.submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.switch {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text3);
+}
+.switchLink {
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+.switchLink:hover { color: var(--gold2); }

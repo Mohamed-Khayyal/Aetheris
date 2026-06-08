@@ -1,0 +1,155 @@
+.page { min-height: 100vh; }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  height: 45vw;
+  max-height: 540px;
+  min-height: 280px;
+  background-size: cover;
+  background-position: center top;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.heroOverlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(11,9,9,0.55) 0%,
+    rgba(11,9,9,0.35) 50%,
+    rgba(11,9,9,0.95) 100%
+  );
+}
+.heroGlow {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+  background: linear-gradient(to top, var(--bg), transparent);
+}
+.heroContent { position: relative; z-index: 1; }
+.heroTitle {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800; line-height: 1.1;
+  color: var(--text);
+  text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+}
+.heroAccent {
+  display: block;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.heroSub {
+  color: var(--text2); font-size: 1rem; margin-top: 12px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+}
+.heroBtns { display: flex; gap: 12px; margin-top: 24px; }
+.heroBtn {
+  padding: 11px 28px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--red-dark), var(--red));
+  color: #fff; font-weight: 700; font-size: 0.9rem;
+  text-decoration: none; border: 1px solid rgba(196,30,30,0.5);
+  box-shadow: 0 4px 20px var(--red-glow);
+  transition: all 0.2s;
+}
+.heroBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px var(--red-glow); color: #fff; }
+.heroBtnGhost {
+  padding: 11px 28px; border-radius: var(--radius-sm);
+  background: transparent; color: var(--gold);
+  font-weight: 600; font-size: 0.9rem;
+  text-decoration: none; border: 1px solid var(--gold-dark);
+  transition: all 0.2s;
+}
+.heroBtnGhost:hover { background: var(--gold-glow); color: var(--gold2); }
+
+/* ── Forum Wrap ── */
+.forumWrap { padding: 40px 20px 80px; }
+
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px;
+}
+.sectionLabel {
+  font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700;
+  color: var(--text);
+}
+.newBtn {
+  padding: 9px 22px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--red-dark), var(--red));
+  color: #fff; font-weight: 700; font-size: 0.875rem;
+  text-decoration: none; border: 1px solid rgba(196,30,30,0.5);
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px var(--red-glow);
+}
+.newBtn:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--red-glow); color: #fff; }
+
+/* ── Section ── */
+.section {}
+.sectionHead {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-bottom: 2px solid var(--red);
+  border-radius: var(--radius) var(--radius) 0 0;
+  font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold);
+}
+.sectionHeadIcon { font-size: 1rem; }
+.sectionHeadLine { flex: 1; height: 1px; background: var(--border); margin-left: 8px; }
+
+.tableHeader {
+  display: grid; grid-template-columns: 1fr 90px 240px;
+  padding: 8px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top: none;
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3);
+  gap: 16px;
+}
+
+/* ── Category Row ── */
+.catRow {
+  display: grid; grid-template-columns: 1fr 90px 240px;
+  padding: 16px 20px; gap: 16px;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.catRow:last-child { border-radius: 0 0 var(--radius) var(--radius); }
+.catRow:hover { background: var(--card-hover); }
+.adminRow:hover { border-left: 3px solid var(--gold); }
+.userRow:hover  { border-left: 3px solid var(--red); }
+
+.catMain { display: flex; align-items: center; gap: 14px; }
+.catIcon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.adminIcon { background: rgba(212,168,67,0.12); border: 1px solid rgba(212,168,67,0.2); }
+.userIcon  { background: rgba(196,30,30,0.12);  border: 1px solid rgba(196,30,30,0.2); }
+
+.catInfo {}
+.catName { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.catDesc { font-size: 0.78rem; color: var(--text3); }
+
+.catStat { text-align: center; }
+.statNum { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); }
+.statLbl { font-size: 0.65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+
+.catLast { font-size: 0.78rem; }
+.lpTitle {
+  display: block; color: var(--text); font-weight: 500; margin-bottom: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;
+}
+.lpMeta { color: var(--text3); font-size: 0.72rem; }
+.noPost { color: var(--text3); font-style: italic; }
+
+@media (max-width: 768px) {
+  .tableHeader { display: none; }
+  .catRow { grid-template-columns: 1fr; gap: 8px; }
+  .catStat, .catLast { display: none; }
+}

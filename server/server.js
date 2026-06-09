@@ -28,12 +28,12 @@ app.use(cookieParser());
 const path = require("path");
 
 // Serve static uploaded files locally
-app.use("/api/uploads", express.static(path.join(__dirname, "public/uploads")));
+app.use(["/api/uploads", "/uploads"], express.static(path.join(__dirname, "public/uploads")));
 
 // API Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/topics", topicRoutes);
-app.use("/api/comments", commentRoutes);
+app.use(["/api/auth", "/auth"], authRoutes);
+app.use(["/api/topics", "/topics"], topicRoutes);
+app.use(["/api/comments", "/comments"], commentRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));

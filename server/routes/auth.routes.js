@@ -31,6 +31,9 @@ router.patch(
   authController.updateProfile
 );
 
+// PATCH /api/auth/update-password  (requires login)
+router.patch("/update-password", protect, authController.updatePassword);
+
 // POST /api/auth/admin/create  — admin only: create another admin account
 router.post(
   "/admin/create",

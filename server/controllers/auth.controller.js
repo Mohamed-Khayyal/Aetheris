@@ -239,3 +239,51 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
   );
 });
 
+/* -----------------------------------------------------------------------
+ * PATCH /api/auth/update-password   (protected)
+ * --------------------------------------------------------------------- */
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return next(new AppError("Current password and new password are required", 400));
+  }
+
+  if (newPassword.length < 6) {
+    return next(new AppError("New password must be at least 6 characters long", 400));
+  }
+
+  // 1) Get user from collection and select password explicitly
+  const user = await User.findById(req.user._id).select("+password");
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  // 2) Check if current password is correct
+  if (!(await user.correctPassword(currentPassword))) {
+    return next(new AppError("Your current password is incorrect", 401));
+  }
+
+  // 3) Update password
+  user.password = newPassword;
+  await user.save();
+
+  // 4) Log user in with new token (send JWT cookie)
+  signTokenAndSetCookie(user, res);
+
+  return sendSuccess(
+    res,
+    {
+      user: {
+        id:    user._id,
+        name:  user.name,
+        email: user.email,
+        role:  user.role,
+        photo: user.photo,
+      },
+    },
+    "Password updated successfully"
+  );
+});
+
+

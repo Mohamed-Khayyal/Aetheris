@@ -24,7 +24,9 @@ export default function Navbar() {
 
         {/* Desktop Navigation links */}
         <nav className={styles.desktopLinks}>
-          <Link to="/" className={styles.link}>Forum</Link>
+          <Link to="https://l2aetheris.com/" className={styles.link} target="_blank" rel="noopener noreferrer">
+            Website
+          </Link>
           {user?.role === 'admin' && (
             <Link to="/admin" className={styles.link}>Admin Dashboard</Link>
           )}

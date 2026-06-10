@@ -30,6 +30,7 @@ export const getMe       = ()     => API.get('/auth/me');
 export const updateProfile = (data) => API.patch('/auth/update-profile', data, {
   headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
 });
+export const updatePassword = (data) => API.patch('/auth/update-password', data);
 export const createAdmin = (data) => API.post('/auth/admin/create', data);
 export const getUsers    = ()     => API.get('/auth/users');
 export const deleteUser  = (id)   => API.delete(`/auth/users/${id}`);

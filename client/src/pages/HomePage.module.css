@@ -3,8 +3,8 @@
 /* ── Hero ── */
 .hero {
   position: relative;
-  height: 45vw;
-  max-height: 540px;
+  height: 57vw;
+  max-height: 912px;
   min-height: 280px;
   background-size: cover;
   background-position: center top;
@@ -15,13 +15,13 @@
 .heroOverlay {
   position: absolute; inset: 0;
   background: linear-gradient(to bottom,
-    rgba(11,9,9,0.55) 0%,
-    rgba(11,9,9,0.35) 50%,
-    rgba(11,9,9,0.95) 100%
+    rgba(11,9,9,0.5) 0%,
+    rgba(11,9,9,0.2) 50%,
+    rgba(11,9,9,0.7) 100%
   );
 }
 .heroGlow {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
   background: linear-gradient(to top, var(--bg), transparent);
 }
 .heroContent { position: relative; z-index: 1; }

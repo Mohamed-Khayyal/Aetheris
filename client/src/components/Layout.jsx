@@ -36,6 +36,7 @@ export default function Layout() {
               rel="noopener noreferrer" 
               className={styles.discordLink}
               title="Join our Discord"
+              aria-label="Join our Discord server"
             >
               <Discord size={22} className={styles.discordIcon} />
             </a>

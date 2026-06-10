@@ -204,8 +204,8 @@ export default function TopicPage() {
             {topic.images?.length > 0 && (
               <div className={styles.imageGrid}>
                 {topic.images.map((url, i) => (
-                  <a key={i} href={getImageUrl(url)} target="_blank" rel="noreferrer">
-                    <img src={getImageUrl(url)} alt={`img-${i}`} className={styles.postImg} />
+                  <a key={i} href={getImageUrl(url)} target="_blank" rel="noreferrer" aria-label={`View full size image ${i + 1}`}>
+                    <img src={getImageUrl(url)} alt={`img-${i}`} className={styles.postImg} loading="lazy" />
                   </a>
                 ))}
               </div>
@@ -285,8 +285,8 @@ export default function TopicPage() {
                     <>
                       <p className={styles.commentText}>{c.body}</p>
                       {c.image && (
-                        <a href={getImageUrl(c.image)} target="_blank" rel="noreferrer">
-                          <img src={getImageUrl(c.image)} alt="attachment" className={styles.commentImg} />
+                        <a href={getImageUrl(c.image)} target="_blank" rel="noreferrer" aria-label="View full size comment attachment">
+                          <img src={getImageUrl(c.image)} alt="attachment" className={styles.commentImg} loading="lazy" />
                         </a>
                       )}
                     </>
@@ -311,7 +311,7 @@ export default function TopicPage() {
           )
         ) : user ? (
           <div className={styles.replyBox}>
-            <h3 className={styles.replyTitle}>Post a Reply</h3>
+            <h2 className={styles.replyTitle}>Post a Reply</h2>
             <form onSubmit={handleComment}>
               <textarea
                 className={styles.replyInput}

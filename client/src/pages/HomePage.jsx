@@ -31,7 +31,7 @@ function CategoryRow({ cat, count, lastPost, isAdmin }) {
           {cat.icon}
         </div>
         <div className={styles.catInfo}>
-          <h4 className={styles.catName}>{cat.name}</h4>
+          <h2 className={styles.catName}>{cat.name}</h2>
           <p className={styles.catDesc}>{cat.desc}</p>
         </div>
       </div>
@@ -93,7 +93,7 @@ export default function HomePage() {
       <div className={`container ${styles.forumWrap}`}>
         {/* New Topic Button */}
         <div className={styles.toolbar}>
-          <h2 className={styles.sectionLabel}>Forum</h2>
+          <h1 className={styles.sectionLabel}>Forum</h1>
           {user && (
             <Link to="/new-topic" className={styles.newBtn}>⚔ New Topic</Link>
           )}

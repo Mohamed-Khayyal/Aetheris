@@ -87,8 +87,8 @@ export default function Navbar() {
         </div>
 
         <nav className={styles.mobileLinks}>
-          <Link to="/" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-            <span>⚔</span> Forum
+          <Link to="https://l2aetheris.com/" className={styles.mobileLink} target="_blank" rel="noopener noreferrer">
+            <span>⚔</span> Website
           </Link>
           {user && (
             <Link to="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>

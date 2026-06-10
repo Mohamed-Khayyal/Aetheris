@@ -1,4 +1,29 @@
-.page { padding: 40px 0 80px; min-height: 100vh; }
+.page {
+  position: relative;
+  min-height: 100vh;
+  padding: 80px 0 120px;
+  background-size: 100% 100%;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, rgba(11, 9, 9, 0.93) 0%, rgba(19, 16, 16, 0.97) 100%);
+  z-index: 1;
+}
+
+.inner {
+  position: relative;
+  z-index: 2;
+}
+
+.mobileMeta {
+  display: none;
+}
 
 .breadcrumb {
   display: flex; align-items: center; gap: 8px;
@@ -116,8 +141,37 @@
 .pageBtn:hover { border-color: var(--red); color: var(--red); }
 .pageBtn.active { background: var(--red); border-color: var(--red); color: #fff; }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .tableHead { display: none; }
-  .topicRow { grid-template-columns: 1fr; gap: 6px; }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .newBtn {
+    align-self: stretch;
+    text-align: center;
+  }
+  .topicRow {
+    grid-template-columns: 1fr;
+    padding: 16px 20px;
+    gap: 8px;
+  }
   .topicAuthor, .topicReplies, .topicDate { display: none; }
+  .mobileMeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--text3);
+    flex-wrap: wrap;
+  }
+  .mobileAuthor {
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .metaDot {
+    color: var(--border);
+  }
 }

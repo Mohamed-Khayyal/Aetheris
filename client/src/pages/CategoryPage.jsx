@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getTopics, getImageUrl } from '../api';
 import { useAuth } from '../context/AuthContext';
 import styles from './CategoryPage.module.css';
+import bgImage from '../assets/bg.jpeg';
 
 const CAT_META = {
   'Announcements':             { icon: '📢', color: 'gold' },
@@ -39,11 +40,14 @@ export default function CategoryPage() {
   }, [decodedCat, page]);
 
   return (
-    <div className={styles.page}>
-      <div className="container">
+    <div className={styles.page} style={{ backgroundImage: `url(${bgImage})` }}>
+      <div className={styles.overlay} />
+      <div className={`container ${styles.inner}`}>
         {/* Breadcrumb */}
         <div className={styles.breadcrumb}>
-          <Link to="/" className={styles.breadLink}>Forum</Link>
+          <Link to="https://l2aetheris.com/" className={styles.breadLink} target="_blank" rel="noopener noreferrer">
+            Forum
+          </Link>
           <span className={styles.breadSep}>/</span>
           <span className={styles.breadCurrent}>{decodedCat}</span>
         </div>
@@ -96,6 +100,21 @@ export default function CategoryPage() {
                   <p className={styles.topicSnippet}>
                     {topic.body?.slice(0, 100)}{topic.body?.length > 100 ? '...' : ''}
                   </p>
+                  
+                  {/* Mobile Metadata */}
+                  <div className={styles.mobileMeta}>
+                    <span className={styles.mobileAuthor}>
+                      by {topic.author?.name}
+                    </span>
+                    <span className={styles.metaDot}>•</span>
+                    <span>💬 {topic.commentsCount} {topic.commentsCount === 1 ? 'reply' : 'replies'}</span>
+                    <span className={styles.metaDot}>•</span>
+                    <span>
+                      {new Date(topic.createdAt).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric'
+                      })}
+                    </span>
+                  </div>
                 </div>
                 <div className={styles.topicAuthor}>
                   <div className={styles.authorAvatar}>

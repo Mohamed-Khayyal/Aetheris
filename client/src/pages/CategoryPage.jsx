@@ -45,7 +45,7 @@ export default function CategoryPage() {
       <div className={`container ${styles.inner}`}>
         {/* Breadcrumb */}
         <div className={styles.breadcrumb}>
-          <Link to="https://l2aetheris.com/" className={styles.breadLink} target="_blank" rel="noopener noreferrer">
+          <Link to="/" className={styles.breadLink}>
             Forum
           </Link>
           <span className={styles.breadSep}>/</span>

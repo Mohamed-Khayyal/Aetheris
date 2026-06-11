@@ -11,7 +11,7 @@ Aetheris is an immersive, dark-fantasy themed community forum designed for playe
 - **📜 Topic Creation & Exploration**: Post topics under official categories (e.g., Announcements, Guides, Mods, Events, Classes). Users can view individual threads, filter topics by category or author, and search by keyword.
 - **🛡️ Administrative Controls**: Topics authored by administrators or placed within official lock categories disable regular user commenting (while still permitting users to support/like the topic), ensuring announcements remain clean.
 - **💖 Interactive Likes**: Users can react to topics with likes to express support.
-- **☁️ Cloudinary Media Uploads**: Integrated profile picture and topic image uploads processed via Multer directly to Cloudinary, with a robust local storage folder fallback.
+- **📁 Local Media Storage**: Integrated profile picture, comment attachments, and topic image uploads processed via Multer directly to the server's local public storage, removing third-party dependencies.
 - **🎨 Premium Theme & Styling**: Styled entirely in custom, responsive Vanilla CSS and CSS Modules with smooth transitions, gold typography highlights, glowing active states, and custom animated SVG Discord integrations.
 
 ---
@@ -22,7 +22,7 @@ Aetheris is an immersive, dark-fantasy themed community forum designed for playe
 - **Node.js & Express**: High-performance REST API routing.
 - **MongoDB Atlas & Mongoose**: Flexible, schema-based ODM database architecture.
 - **JSON Web Tokens (JWT) & Cookie Parser**: Secure session authentication.
-- **Multer & Cloudinary**: Direct memory-buffered cloud media uploads.
+- **Multer & Local Filesystem**: Secure local media uploading and static file routing.
 
 ### Frontend (Client)
 - **React (Vite)**: Rapid hot-module reloading and optimized bundling.
@@ -64,7 +64,6 @@ Aetheris/
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v16+ recommended)
 - A [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) database cluster
-- A [Cloudinary](https://cloudinary.com/) account for avatar/image storage
 
 ### Installation
 1. Clone the repository and navigate to the directory:
@@ -104,11 +103,6 @@ MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/aetheris
 # JWT
 JWT_SECRET=your_super_secret_jwt_key_here
 JWT_EXPIRES_IN=7d
-
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
 
 # CORS (Comma-separated allowed origins)
 ALLOWED_ORIGINS=http://localhost:5173

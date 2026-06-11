@@ -1,5 +1,4 @@
 const multer = require("multer");
-const cloudinary = require("../config/cloudinary");
 const AppError = require("../utilts/app.Error");
 const catchAsync = require("../utilts/catch.Async");
 const fs = require("fs");
@@ -18,11 +17,11 @@ const multerFilter = (req, file, cb) => {
 const upload = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 
 /* -----------------------------------------------------------------------
- * Wrap multer to work with Express 5 + multer v2
+ * Multer field wrappers
  * --------------------------------------------------------------------- */
 exports.uploadSingle = (field) => (req, res, next) => {
   upload.single(field)(req, res, (err) => {
@@ -39,27 +38,7 @@ exports.uploadFields = (fields) => (req, res, next) => {
 };
 
 /* -----------------------------------------------------------------------
- * Upload a buffer to Cloudinary using upload_stream
- * --------------------------------------------------------------------- */
-const uploadBufferToCloudinary = (file, folder) => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        resource_type: "image",
-        transformation: [{ quality: "auto" }, { fetch_format: "auto" }],
-      },
-      (error, result) => {
-        if (error) return reject(error);
-        resolve(result);
-      }
-    );
-    stream.end(file.buffer);
-  });
-};
-
-/* -----------------------------------------------------------------------
- * Local storage fallback when Cloudinary fails
+ * Save buffer directly to server's local public/uploads directory
  * --------------------------------------------------------------------- */
 const saveBufferLocally = (file, fieldName) => {
   const localFolderMap = {
@@ -81,23 +60,16 @@ const saveBufferLocally = (file, fieldName) => {
   const filePath = path.join(uploadDir, filename);
   
   fs.writeFileSync(filePath, file.buffer);
-  console.log(`[Local Fallback] Saved file locally: ${filePath}`);
+  console.log(`[Local Upload] Saved file locally: ${filePath}`);
   return `/api/uploads/${subfolder}/${filename}`;
 };
 
 /* -----------------------------------------------------------------------
- * Process uploaded files → push secure URLs into req.body.
- * Falls back to local server storage if Cloudinary fails.
+ * Process uploads and assign local URLs to req.body.
+ * We keep the name uploadToCloudinary to avoid refactoring import names in routing files.
  * --------------------------------------------------------------------- */
-const folderMap = {
-  photo:  "aetheris/users",
-  image:  "aetheris/comments",
-  images: "aetheris/topics",
-  banner: "aetheris/banners",
-};
-
 exports.uploadToCloudinary = catchAsync(async (req, res, next) => {
-  console.log("=== uploadToCloudinary middleware ===");
+  console.log("=== Local upload middleware ===");
   console.log("req.file:", req.file ? req.file.originalname : "undefined");
   console.log("req.files:", req.files ? Object.keys(req.files) : "undefined");
 
@@ -112,15 +84,13 @@ exports.uploadToCloudinary = catchAsync(async (req, res, next) => {
   // ── Single file ──
   if (hasFile) {
     const field  = req.file.fieldname;
-    const folder = folderMap[field] || "aetheris/others";
     try {
-      console.log(`Uploading single file ${req.file.originalname} to Cloudinary...`);
-      const result = await uploadBufferToCloudinary(req.file, folder);
-      req.body[field] = result.secure_url;
-      console.log(`Cloudinary upload success: ${result.secure_url}`);
+      const localPath = saveBufferLocally(req.file, field);
+      req.body[field] = localPath;
+      console.log(`Saved single file locally: ${localPath}`);
     } catch (err) {
-      console.error(`Cloudinary upload failed: ${err.message}`);
-      return next(new AppError(`Cloudinary upload failed: ${err.message}`, 400));
+      console.error(`Local upload failed: ${err.message}`);
+      return next(new AppError(`Local upload failed: ${err.message}`, 400));
     }
   }
 
@@ -130,19 +100,16 @@ exports.uploadToCloudinary = catchAsync(async (req, res, next) => {
       const files = req.files[fieldName];
       if (!files || !files.length) continue;
 
-      const folder  = folderMap[fieldName] || "aetheris/others";
       const uploads = [];
-
-      console.log(`Uploading ${files.length} files for field "${fieldName}"...`);
+      console.log(`Saving ${files.length} files locally for field "${fieldName}"...`);
       for (const file of files) {
         try {
-          console.log(`Uploading ${file.originalname} to Cloudinary...`);
-          const result = await uploadBufferToCloudinary(file, folder);
-          uploads.push(result.secure_url);
-          console.log(`Cloudinary upload success: ${result.secure_url}`);
+          const localPath = saveBufferLocally(file, fieldName);
+          uploads.push(localPath);
+          console.log(`Saved file locally: ${localPath}`);
         } catch (err) {
-          console.error(`Cloudinary upload failed for ${file.originalname}: ${err.message}`);
-          return next(new AppError(`Cloudinary upload failed for ${file.originalname}: ${err.message}`, 400));
+          console.error(`Local upload failed for ${file.originalname}: ${err.message}`);
+          return next(new AppError(`Local upload failed for ${file.originalname}: ${err.message}`, 400));
         }
       }
 

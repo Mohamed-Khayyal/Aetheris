@@ -42,10 +42,11 @@ exports.uploadFields = (fields) => (req, res, next) => {
  * --------------------------------------------------------------------- */
 const saveBufferLocally = (file, fieldName) => {
   const localFolderMap = {
-    photo:  "users",
-    image:  "comments",
-    images: "topics",
-    banner: "banners",
+    photo:      "users",
+    image:      "comments",
+    images:     "topics",
+    topicImage: "topics",
+    banner:     "banners",
   };
   const subfolder = localFolderMap[fieldName] || "others";
   const uploadDir = path.join(__dirname, "../public/uploads", subfolder);

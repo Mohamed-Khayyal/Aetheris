@@ -276,3 +276,154 @@
   line-height: 1.5;
 }
 
+/* ── Edit Button ── */
+.editBtn {
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  background: none; border: 1px solid var(--border2);
+  color: var(--text3); font-size: 0.82rem; cursor: pointer;
+  font-family: inherit; transition: all 0.2s;
+}
+.editBtn:hover { border-color: var(--gold); color: var(--gold); background: rgba(212,168,67,0.08); }
+
+/* ── Edit Topic Form ── */
+.editTopicForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  margin-top: 10px;
+}
+.editTopicInput, .editTopicSelect, .editTopicTextarea {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  outline: none;
+  transition: all 0.2s;
+  width: 100%;
+}
+.editTopicInput:focus, .editTopicSelect:focus, .editTopicTextarea:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(196, 30, 30, 0.12);
+}
+.editTopicTextarea {
+  resize: vertical;
+  min-height: 200px;
+  line-height: 1.6;
+}
+.editTopicSelect option {
+  background: var(--bg2);
+}
+.editTopicActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.saveBtn {
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--red-dark), var(--red));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 2px 12px var(--red-glow);
+  transition: all 0.2s;
+}
+.saveBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 18px var(--red-glow);
+}
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.cancelBtn {
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cancelBtn:hover {
+  border-color: var(--text2);
+  color: var(--text);
+}
+.errorText {
+  color: var(--red);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+/* ── Inline Image Upload ── */
+.textareaHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.insertBtn {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--gold);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.insertBtn:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold2);
+  background: var(--gold-glow);
+}
+.insertBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.fileHint {
+  font-size: 0.72rem;
+  color: var(--text3);
+}
+
+/* ── Embedded Images in Body ── */
+.embeddedImageWrap {
+  margin: 16px 0;
+  display: flex;
+  justify-content: center;
+}
+.embeddedImg {
+  max-width: 100%;
+  max-height: 480px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+  cursor: zoom-in;
+}
+.embeddedImg:hover {
+  transform: scale(1.01);
+}
+.bodyContent {
+  font-size: 0.92rem;
+  line-height: 1.85;
+  color: var(--text);
+}
+

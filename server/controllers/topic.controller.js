@@ -105,7 +105,7 @@ exports.updateTopic = catchAsync(async (req, res, next) => {
   if (!topic) return next(new AppError("Topic not found", 404));
 
   const isOwner = topic.author.toString() === req.user._id.toString();
-  if (!isOwner && req.user.role !== "admin") {
+  if (!isOwner) {
     return next(new AppError("You are not allowed to update this topic", 403));
   }
 

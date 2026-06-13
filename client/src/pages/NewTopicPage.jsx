@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { createTopic } from '../api';
+import { createTopic, uploadTopicImage } from '../api';
 import { useAuth } from '../context/AuthContext';
 import bgImage from '../assets/bg.jpeg';
 import styles from './NewTopicPage.module.css';
@@ -18,9 +18,88 @@ export default function NewTopicPage() {
     category: location.state?.defaultCategory || '',
     body: '',
   });
-  const [images, setImages]   = useState(null);
   const [error, setError]     = useState('');
   const [loading, setLoading] = useState(false);
+
+  const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+      setError('Only image files are allowed');
+      return;
+    }
+
+    // Enforce 10 image limit
+    const matches = (form.body.match(/!\[.*?\]\((.*?)\)/g) || []).length;
+    if (matches >= 10) {
+      setError('You can only upload up to 10 images per topic.');
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end, text.length);
+    const placeholder = "\n[Uploading image...]\n";
+    
+    setForm(f => ({ ...f, body: before + placeholder + after }));
+
+    try {
+      const fd = new FormData();
+      fd.append('topicImage', file);
+      const res = await uploadTopicImage(fd);
+      const imageUrl = res.data.data.url;
+      const markdown = `\n![image](${imageUrl})\n`;
+      
+      setForm(f => ({ ...f, body: before + markdown + after }));
+      
+      setTimeout(() => {
+        textarea.focus();
+        const newPos = start + markdown.length;
+        textarea.setSelectionRange(newPos, newPos);
+      }, 100);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to upload image');
+      setForm(f => ({ ...f, body: before + after }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePaste = (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        handleImageUpload(file);
+        e.preventDefault();
+        break;
+      }
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+      handleImageUpload(files[0]);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
   useEffect(() => {
     if (authLoading) return;
@@ -37,14 +116,11 @@ export default function NewTopicPage() {
     e.preventDefault();
     setError(''); setLoading(true);
     try {
-      const fd = new FormData();
-      fd.append('title',    form.title);
-      fd.append('category', form.category);
-      fd.append('body',     form.body);
-      if (images) {
-        Array.from(images).forEach(img => fd.append('images', img));
-      }
-      const res = await createTopic(fd);
+      const res = await createTopic({
+        title: form.title,
+        category: form.category,
+        body: form.body,
+      });
       navigate(`/topic/${res.data.data.topic._id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create topic');
@@ -112,28 +188,42 @@ export default function NewTopicPage() {
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.label}>Body</label>
+              <div className={styles.textareaHeader}>
+                <label className={styles.label}>Body</label>
+                <button
+                  type="button"
+                  className={styles.insertBtn}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading}
+                >
+                  🖼️ Insert Image
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  accept="image/*"
+                  onChange={e => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleImageUpload(e.target.files[0]);
+                    }
+                  }}
+                />
+              </div>
               <textarea
+                ref={textareaRef}
                 className={styles.textarea}
                 name="body"
-                placeholder="Share your thoughts with the community..."
+                placeholder="Share your thoughts with the community... (You can paste or drag & drop images directly here!)"
                 value={form.body}
                 onChange={handleChange}
+                onPaste={handlePaste}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
                 required
-                rows={10}
+                rows={12}
               />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Images (optional, up to 5)</label>
-              <input
-                className={styles.fileInput}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={e => setImages(e.target.files)}
-              />
-              <span className={styles.fileHint}>Max 5MB per image</span>
+              <span className={styles.fileHint}>Drag & drop or paste images. Max 10 images, 5MB per image.</span>
             </div>
 
             {error && <p className={styles.error}>{error}</p>}

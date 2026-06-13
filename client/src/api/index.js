@@ -42,6 +42,9 @@ export const createTopic  = (data)   => API.post('/topics', data, {
   headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
 });
 export const updateTopic  = (id, d)  => API.patch(`/topics/${id}`, d);
+export const uploadTopicImage = (data) => API.post('/topics/upload-image', data, {
+  headers: { 'Content-Type': 'multipart/form-data' },
+});
 export const deleteTopic  = (id)     => API.delete(`/topics/${id}`);
 export const getCategories = ()      => API.get('/topics/categories');
 export const likeTopic    = (id)     => API.post(`/topics/${id}/like`);

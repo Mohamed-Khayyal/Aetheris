@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   getTopicById, createComment, updateComment,
   deleteComment, deleteTopic, likeTopic, getImageUrl,
+  updateTopic, uploadTopicImage,
 } from '../api';
 import { useAuth } from '../context/AuthContext';
 import styles from './TopicPage.module.css';
@@ -35,6 +36,159 @@ export default function TopicPage() {
   const [liked,        setLiked]        = useState(false);
   const [likesCount,   setLikesCount]   = useState(0);
   const [liking,       setLiking]       = useState(false);
+
+  // Edit topic state
+  const [isEditingTopic, setIsEditingTopic] = useState(false);
+  const [editTopicTitle, setEditTopicTitle] = useState('');
+  const [editTopicCategory, setEditTopicCategory] = useState('');
+  const [editTopicBody, setEditTopicBody] = useState('');
+  const [topicEditLoading, setTopicEditLoading] = useState(false);
+  const [topicEditError, setTopicEditError] = useState('');
+
+  const editTopicTextareaRef = useRef(null);
+  const editTopicFileInputRef = useRef(null);
+
+  const ADMIN_CATS = ['Announcements', 'Guides', 'Mods', 'Events', 'Classes'];
+  const USER_CATS  = ['Questions and suggestions', 'Bug reports', 'Marketplace'];
+  const availableCats = user?.role === 'admin'
+    ? [...ADMIN_CATS, ...USER_CATS]
+    : USER_CATS;
+
+  const startEditTopic = () => {
+    if (!topic) return;
+    setEditTopicTitle(topic.title);
+    setEditTopicCategory(topic.category);
+    setEditTopicBody(topic.body);
+    setTopicEditError('');
+    setIsEditingTopic(true);
+  };
+
+  const handleTopicImageUpload = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setTopicEditError('Only image files are allowed');
+      return;
+    }
+
+    const matches = (editTopicBody.match(/!\[.*?\]\((.*?)\)/g) || []).length;
+    if (matches >= 10) {
+      setTopicEditError('You can only upload up to 10 images per topic.');
+      return;
+    }
+
+    setTopicEditError('');
+    setTopicEditLoading(true);
+
+    const textarea = editTopicTextareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end, text.length);
+    const placeholder = "\n[Uploading image...]\n";
+    
+    setEditTopicBody(before + placeholder + after);
+
+    try {
+      const fd = new FormData();
+      fd.append('topicImage', file);
+      const res = await uploadTopicImage(fd);
+      const imageUrl = res.data.data.url;
+      const markdown = `\n![image](${imageUrl})\n`;
+      
+      setEditTopicBody(before + markdown + after);
+      
+      setTimeout(() => {
+        textarea.focus();
+        const newPos = start + markdown.length;
+        textarea.setSelectionRange(newPos, newPos);
+      }, 100);
+    } catch (err) {
+      setTopicEditError(err.response?.data?.message || 'Failed to upload image');
+      setEditTopicBody(before + after);
+    } finally {
+      setTopicEditLoading(false);
+    }
+  };
+
+  const handleTopicPaste = (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        handleTopicImageUpload(file);
+        e.preventDefault();
+        break;
+      }
+    }
+  };
+
+  const handleTopicDrop = (e) => {
+    e.preventDefault();
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+      handleTopicImageUpload(files[0]);
+    }
+  };
+
+  const handleTopicDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleTopicEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editTopicTitle.trim() || !editTopicBody.trim() || !editTopicCategory.trim()) return;
+    setTopicEditLoading(true);
+    setTopicEditError('');
+
+    try {
+      await updateTopic(id, {
+        title: editTopicTitle,
+        category: editTopicCategory,
+        body: editTopicBody,
+      });
+      setIsEditingTopic(false);
+      await fetchTopic();
+    } catch (err) {
+      setTopicEditError(err.response?.data?.message || 'Failed to update topic');
+    } finally {
+      setTopicEditLoading(false);
+    }
+  };
+
+  const renderBody = (text) => {
+    if (!text) return null;
+    const regex = /!\[.*?\]\((.*?)\)/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = regex.exec(text)) !== null) {
+      const textPart = text.substring(lastIndex, match.index);
+      if (textPart) {
+        parts.push(<span key={`txt-${lastIndex}`} style={{ whiteSpace: 'pre-wrap' }}>{textPart}</span>);
+      }
+      const imageUrl = match[1];
+      parts.push(
+        <div key={`img-${match.index}`} className={styles.embeddedImageWrap}>
+          <a href={getImageUrl(imageUrl)} target="_blank" rel="noreferrer" aria-label="View full size image">
+            <img src={getImageUrl(imageUrl)} alt="Embedded content" className={styles.embeddedImg} loading="lazy" />
+          </a>
+        </div>
+      );
+      lastIndex = regex.lastIndex;
+    }
+    
+    const remainingText = text.substring(lastIndex);
+    if (remainingText) {
+      parts.push(<span key={`txt-${lastIndex}`} style={{ whiteSpace: 'pre-wrap' }}>{remainingText}</span>);
+    }
+    
+    return <div className={styles.bodyContent}>{parts}</div>;
+  };
 
   const bottomRef = useRef(null);
 
@@ -133,7 +287,6 @@ export default function TopicPage() {
   const isAdmin   = user?.role === 'admin';
   const comments  = topic.comments || [];
 
-  const ADMIN_CATS = ['Announcements', 'Guides', 'Mods', 'Events', 'Classes'];
   const isAdminCategory = ADMIN_CATS.includes(topic.category);
   const isAdminAuthor = topic.author?.role === 'admin';
   const isLockedTopic = isAdminCategory || isAdminAuthor;
@@ -168,11 +321,20 @@ export default function TopicPage() {
               >
                 {liked ? '❤️' : '🤍'} <span>{likesCount}</span>
               </button>
-              {/* Delete topic (owner or admin) */}
-              {(isOwner || isAdmin) && (
-                <button className={styles.deleteBtn} onClick={handleDeleteTopic} title="Delete topic">
-                  🗑 Delete
-                </button>
+              {/* Edit/Delete topic (owner can edit, owner/admin can delete) */}
+              {!isEditingTopic && (
+                <>
+                  {isOwner && (
+                    <button className={styles.editBtn} onClick={startEditTopic} title="Edit topic">
+                      ✏️ Edit
+                    </button>
+                  )}
+                  {(isOwner || isAdmin) && (
+                    <button className={styles.deleteBtn} onClick={handleDeleteTopic} title="Delete topic">
+                      🗑 Delete
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -199,16 +361,96 @@ export default function TopicPage() {
             </span>
           </div>
           <div className={styles.postBody}>
-            <div className={styles.postDate}>{timeAgo(topic.createdAt)}</div>
-            <p className={styles.postText}>{topic.body}</p>
-            {topic.images?.length > 0 && (
-              <div className={styles.imageGrid}>
-                {topic.images.map((url, i) => (
-                  <a key={i} href={getImageUrl(url)} target="_blank" rel="noreferrer" aria-label={`View full size image ${i + 1}`}>
-                    <img src={getImageUrl(url)} alt={`img-${i}`} className={styles.postImg} loading="lazy" />
-                  </a>
-                ))}
-              </div>
+            {isEditingTopic ? (
+              <form onSubmit={handleTopicEditSubmit} className={styles.editTopicForm}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="editTopicTitle" className={styles.label}>Title</label>
+                  <input
+                    id="editTopicTitle"
+                    type="text"
+                    className={styles.editTopicInput}
+                    value={editTopicTitle}
+                    onChange={e => setEditTopicTitle(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="editTopicCategory" className={styles.label}>Category</label>
+                  <select
+                    id="editTopicCategory"
+                    className={styles.editTopicSelect}
+                    value={editTopicCategory}
+                    onChange={e => setEditTopicCategory(e.target.value)}
+                    required
+                  >
+                    {availableCats.map(catName => (
+                      <option key={catName} value={catName}>
+                        {catName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <div className={styles.textareaHeader}>
+                    <label htmlFor="editTopicBody" className={styles.label}>Body</label>
+                    <button
+                      type="button"
+                      className={styles.insertBtn}
+                      onClick={() => editTopicFileInputRef.current?.click()}
+                      disabled={topicEditLoading}
+                    >
+                      🖼️ Insert Image
+                    </button>
+                    <input
+                      type="file"
+                      ref={editTopicFileInputRef}
+                      style={{ display: 'none' }}
+                      accept="image/*"
+                      onChange={e => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleTopicImageUpload(e.target.files[0]);
+                        }
+                      }}
+                    />
+                  </div>
+                  <textarea
+                    id="editTopicBody"
+                    ref={editTopicTextareaRef}
+                    className={styles.editTopicTextarea}
+                    value={editTopicBody}
+                    onChange={e => setEditTopicBody(e.target.value)}
+                    onPaste={handleTopicPaste}
+                    onDrop={handleTopicDrop}
+                    onDragOver={handleTopicDragOver}
+                    rows={12}
+                    required
+                  />
+                  <span className={styles.fileHint}>Drag & drop or paste images. Max 10 images, 5MB per image.</span>
+                </div>
+                {topicEditError && <p className={styles.errorText}>{topicEditError}</p>}
+                <div className={styles.editTopicActions}>
+                  <button type="button" className={styles.cancelBtn} onClick={() => setIsEditingTopic(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className={styles.saveBtn} disabled={topicEditLoading}>
+                    {topicEditLoading ? 'Saving...' : '✓ Save Changes'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <div className={styles.postDate}>{timeAgo(topic.createdAt)}</div>
+                <div className={styles.postText}>{renderBody(topic.body)}</div>
+                {topic.images?.length > 0 && (
+                  <div className={styles.imageGrid}>
+                    {topic.images.map((url, i) => (
+                      <a key={i} href={getImageUrl(url)} target="_blank" rel="noreferrer" aria-label={`View full size image ${i + 1}`}>
+                        <img src={getImageUrl(url)} alt={`img-${i}`} className={styles.postImg} loading="lazy" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

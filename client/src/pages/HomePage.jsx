@@ -132,7 +132,7 @@ export default function HomePage() {
           </div>
           {USER_CATS.map(cat => (
             <CategoryRow
-              key={cat.name}
+              key={cat.name} 
               cat={cat}
               isAdmin={false}
               count={stats[cat.name]?.count}
